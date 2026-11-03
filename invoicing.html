@@ -34,6 +34,9 @@
         }
     </script>
 
+    <!-- html2pdf for Direct A4 PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         body {
             background-color: #111111;
@@ -47,6 +50,13 @@
         ::-webkit-scrollbar-track { background: #111111; }
         ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
 
+        /* A4 Page Formatting for Direct Print & html2pdf */
+        #printableInvoice {
+            box-sizing: border-box;
+            background: white !important;
+            color: #111827 !important;
+        }
+
         @media print {
             body * { visibility: hidden; }
             #printableInvoice, #printableInvoice * { visibility: visible; }
@@ -54,10 +64,12 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 210mm;
+                min-height: 297mm;
+                padding: 15mm;
+                margin: 0;
                 background: white !important;
                 color: black !important;
-                padding: 20px;
             }
         }
     </style>
@@ -85,6 +97,10 @@
                 <a href="projecttracker.html" class="p-2 bg-surface hover:bg-surface-border text-gray-300 hover:text-paper rounded-lg border border-surface-border transition flex items-center gap-1 font-spec text-xs" title="Buka Project Tracker">
                     <svg class="w-4 h-4 text-process-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                     <span class="hidden sm:inline">Project Tracker</span>
+                </a>
+                <a href="laporankeuangan.html" class="p-2 bg-surface hover:bg-surface-border text-gray-300 hover:text-paper rounded-lg border border-surface-border transition flex items-center gap-1 font-spec text-xs" title="Buka Laporan Keuangan">
+                    <svg class="w-4 h-4 text-process-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="hidden sm:inline">Keuangan</span>
                 </a>
                 <svg class="w-10 h-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="85" cy="85" r="45" fill="#009ACC" style="mix-blend-mode: screen;"/>
@@ -118,7 +134,7 @@
                 <h2 class="text-2xl font-extrabold tracking-wider text-paper font-spec">INVOICING & BILLING</h2>
             </div>
             <span class="font-spec text-xs text-gray-400 bg-surface px-3 py-1 rounded border border-surface-border">
-                Modul Penagihan Resmi
+                Modul Penagihan & Cetak PDF A4
             </span>
         </div>
 
@@ -185,7 +201,7 @@
                         <input type="text" id="invNumber" required class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-magenta focus:outline-none">
                     </div>
                     <div>
-                        <label class="block font-spec text-xs text-gray-300 mb-1">Hubungkan ke Project</label>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Hubungkan ke Project (Auto Import Item & Harga)</label>
                         <select id="invProjectSelect" onchange="autoFillProjectInfo()" class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-magenta focus:outline-none">
                             <option value="">-- Pilih Project (Opsional) --</option>
                         </select>
@@ -227,9 +243,9 @@
                 <!-- Items Section -->
                 <div class="space-y-3 pt-4 border-t border-surface-border">
                     <div class="flex justify-between items-center">
-                        <h4 class="font-spec text-xs font-bold text-process-magenta uppercase tracking-wider">Rincian Item / Tagihan Jasa Cetak</h4>
+                        <h4 class="font-spec text-xs font-bold text-process-magenta uppercase tracking-wider">Rincian Item / Tagihan Jasa Cetak (Harga Jual)</h4>
                         <button type="button" onclick="addInvoiceItemRow()" class="font-spec text-xs bg-surface border border-process-magenta text-process-magenta hover:bg-process-magenta hover:text-paper px-3 py-1 rounded transition">
-                            + Tambah Item
+                            + Tambah Item Manual
                         </button>
                     </div>
 
@@ -238,19 +254,33 @@
                     </div>
                 </div>
 
-                <!-- Calculation Section -->
-                <div class="bg-key-black p-4 rounded border border-surface-border grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block font-spec text-xs text-gray-400 mb-1">Diskon / Potongan (Rp)</label>
-                        <input type="number" id="invDiscount" value="0" oninput="calculateInvoiceTotals()" class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper font-spec focus:outline-none">
+                <!-- Calculation Section & Opsi PPN 11% -->
+                <div class="bg-key-black p-4 rounded border border-surface-border space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block font-spec text-xs text-gray-400 mb-1">Diskon / Potongan (Rp)</label>
+                            <input type="number" id="invDiscount" value="0" oninput="calculateInvoiceTotals()" class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper font-spec focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-spec text-xs text-gray-400 mb-1">Uang Muka / DP Diterima (Rp)</label>
+                            <input type="number" id="invDpPaid" value="0" oninput="calculateInvoiceTotals()" class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper font-spec focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-spec text-xs text-gray-400 mb-1">Catatan Tambahan</label>
+                            <input type="text" id="invNotes" placeholder="Transfer ke Rek BCA 123..." class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper focus:outline-none">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-spec text-xs text-gray-400 mb-1">Uang Muka / DP Diterima (Rp)</label>
-                        <input type="number" id="invDpPaid" value="0" oninput="calculateInvoiceTotals()" class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper font-spec focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block font-spec text-xs text-gray-400 mb-1">Catatan Tambahan</label>
-                        <input type="text" id="invNotes" placeholder="Transfer ke Rek BCA 123..." class="w-full bg-surface border border-surface-border rounded px-3 py-1.5 text-xs text-paper focus:outline-none">
+
+                    <!-- PPN 11% Checkbox Option -->
+                    <div class="flex items-center justify-between p-3 rounded bg-surface border border-surface-border">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="invTaxCheck" onchange="calculateInvoiceTotals()" class="w-4 h-4 accent-process-cyan cursor-pointer">
+                            <div>
+                                <span class="font-spec text-xs font-bold text-paper">Kenakan PPN 11% (Pajak Pertambahan Nilai)</span>
+                                <span class="block text-[11px] text-gray-400">Otomatis dihitung 11% dari nilai tagihan setelah diskon</span>
+                            </div>
+                        </label>
+                        <span id="taxBadgeCalculated" class="font-spec text-xs text-process-cyan font-bold">Rp 0</span>
                     </div>
                 </div>
 
@@ -258,53 +288,61 @@
                 <div class="border-t border-surface-border pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="font-spec text-xs space-y-1">
                         <p>Subtotal: <span id="modalSubtotal" class="text-paper font-bold">Rp 0</span></p>
-                        <p>Total Tagihan: <span id="modalTotalAmount" class="text-process-cyan font-bold">Rp 0</span></p>
+                        <p>Potongan Diskon: <span id="modalDiscount" class="text-gray-400 font-bold">Rp 0</span></p>
+                        <p>PPN 11%: <span id="modalTax" class="text-process-cyan font-bold">Rp 0</span></p>
+                        <p>Total Tagihan: <span id="modalTotalAmount" class="text-process-cyan font-bold text-sm">Rp 0</span></p>
                         <p>Sisa Tagihan (Due): <span id="modalBalanceDue" class="text-process-magenta font-bold">Rp 0</span></p>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" onclick="closeInvoiceModal()" class="px-4 py-2 bg-surface text-gray-300 rounded font-spec text-xs hover:bg-gray-800">Batal</button>
-                        <button type="submit" class="px-6 py-2 bg-process-magenta text-paper rounded font-spec text-xs font-bold hover:opacity-90">Simpan ke Google Sheets</button>
+                        <button type="submit" class="px-6 py-2 bg-process-magenta text-paper rounded font-spec text-xs font-bold hover:opacity-90 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            Simpan & Download PDF A4
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal View & Print Invoice (Standar Cetak Percetakan) -->
+    <!-- Modal View & Print Invoice (Standar Cetak Percetakan A4) -->
     <div id="printModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-surface border border-surface-border rounded-lg max-w-4xl w-full p-6 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
             
             <div class="flex justify-between items-center border-b border-surface-border pb-4">
-                <h3 class="text-lg font-bold text-paper font-spec">Preview Faktur Invoice Resmi</h3>
+                <h3 class="text-lg font-bold text-paper font-spec">Preview Faktur Invoice Resmi (Ukuran A4)</h3>
                 <div class="flex gap-2">
-                    <button onclick="window.print()" class="px-4 py-1.5 bg-process-cyan text-key-black font-spec text-xs font-bold rounded flex items-center gap-1.5 hover:opacity-90">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Cetak / Download PDF
+                    <button onclick="downloadActiveInvoicePdf()" class="px-4 py-1.5 bg-process-cyan text-key-black font-spec text-xs font-bold rounded flex items-center gap-1.5 hover:opacity-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download PDF A4
+                    </button>
+                    <button onclick="window.print()" class="px-3 py-1.5 bg-surface border border-surface-border text-paper font-spec text-xs font-bold rounded flex items-center gap-1 hover:border-paper">
+                        🖨️ Cetak
                     </button>
                     <button onclick="closePrintModal()" class="text-gray-400 hover:text-paper text-xl font-bold px-2">&times;</button>
                 </div>
             </div>
 
-            <!-- Printable Paper Container -->
-            <div id="printableInvoice" class="bg-white text-gray-900 p-8 rounded-lg shadow-xl font-sans space-y-6">
+            <!-- Printable Paper Container (Formatted for A4) -->
+            <div id="printableInvoice" class="bg-white text-gray-900 p-10 rounded-lg shadow-2xl font-sans space-y-6 max-w-[210mm] mx-auto">
                 
                 <!-- Invoice Header Bar -->
                 <div class="flex justify-between items-start border-b-2 border-gray-900 pb-6">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-[#009ACC] inline-block"></span>
-                            <span class="w-3 h-3 rounded-full bg-[#DD0072] inline-block"></span>
-                            <span class="w-3 h-3 rounded-full bg-[#F4C900] inline-block"></span>
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#009ACC] inline-block"></span>
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#DD0072] inline-block"></span>
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#F4C900] inline-block"></span>
                             <h2 class="text-2xl font-black tracking-tight text-gray-900">KMA PRINTWORKS</h2>
                         </div>
-                        <p class="text-xs text-gray-600">Professional Printing & Visual Communication Solutions</p>
-                        <p class="text-xs text-gray-600">Jl. Operasional Workshop KMA • WhatsApp: 0812-XXXX-XXXX</p>
+                        <p class="text-xs text-gray-600 font-medium">Digital Printing, Offset & Creative Merchandising</p>
+                        <p class="text-xs text-gray-500">Workshop & Office KMA • Email: admin@kmaprintworks.internal</p>
                     </div>
 
                     <div class="text-right space-y-1">
-                        <h3 class="text-2xl font-black text-[#DD0072] tracking-wider font-mono">INVOICE</h3>
+                        <h3 class="text-3xl font-black text-[#DD0072] tracking-wider font-mono">INVOICE</h3>
                         <p id="printInvNumber" class="text-sm font-bold font-mono text-gray-800">INV-2026-000</p>
-                        <p class="text-xs text-gray-600">Tgl: <span id="printInvDate">-</span></p>
+                        <p class="text-xs text-gray-600">Tanggal: <span id="printInvDate" class="font-bold">-</span></p>
                         <p class="text-xs text-red-600 font-bold">Jatuh Tempo: <span id="printInvDueDate">-</span></p>
                     </div>
                 </div>
@@ -312,15 +350,15 @@
                 <!-- Client Details & Project Relation -->
                 <div class="grid grid-cols-2 gap-6 text-xs border-b border-gray-200 pb-4">
                     <div>
-                        <p class="text-gray-500 font-bold uppercase font-mono text-[10px]">Ditagihkan Kepada:</p>
+                        <p class="text-gray-400 font-bold uppercase font-mono text-[10px]">Ditagihkan Kepada:</p>
                         <h4 id="printClientName" class="text-base font-bold text-gray-900 mt-0.5">Nama Client</h4>
                         <p id="printClientPhone" class="text-gray-700 font-mono">08xxxx</p>
                         <p id="printClientAddress" class="text-gray-600">Alamat Client</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-gray-500 font-bold uppercase font-mono text-[10px]">Terkait Proyek:</p>
+                        <p class="text-gray-400 font-bold uppercase font-mono text-[10px]">Terkait Proyek:</p>
                         <p id="printProjectName" class="text-sm font-bold text-gray-800">-</p>
-                        <p class="text-gray-500 font-bold uppercase font-mono text-[10px] mt-2">Status Pembayaran:</p>
+                        <p class="text-gray-400 font-bold uppercase font-mono text-[10px] mt-2">Status Pembayaran:</p>
                         <span id="printPaymentBadge" class="inline-block px-2.5 py-0.5 rounded text-[11px] font-bold font-mono bg-yellow-100 text-yellow-800">
                             Belum Lunas
                         </span>
@@ -328,15 +366,15 @@
                 </div>
 
                 <!-- Invoice Items Table -->
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto min-h-[160px]">
                     <table class="w-full text-xs text-left">
                         <thead>
-                            <tr class="border-b-2 border-gray-300 font-mono text-gray-700 uppercase">
-                                <th class="py-2">No.</th>
-                                <th class="py-2">Deskripsi Barang / Jasa</th>
-                                <th class="py-2 text-center">Qty</th>
-                                <th class="py-2 text-right">Harga Satuan</th>
-                                <th class="py-2 text-right">Total</th>
+                            <tr class="border-b-2 border-gray-900 font-mono text-gray-800 uppercase text-[11px]">
+                                <th class="py-2.5 w-10">No.</th>
+                                <th class="py-2.5">Deskripsi Barang / Jasa Cetak</th>
+                                <th class="py-2.5 text-center w-16">Qty</th>
+                                <th class="py-2.5 text-right w-32">Harga Satuan</th>
+                                <th class="py-2.5 text-right w-36">Total</th>
                             </tr>
                         </thead>
                         <tbody id="printItemsTable">
@@ -346,15 +384,15 @@
                 </div>
 
                 <!-- Totals & Payment Details -->
-                <div class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-200">
+                <div class="grid grid-cols-2 gap-6 pt-4 border-t-2 border-gray-900">
                     <div class="text-xs space-y-2">
-                        <p class="font-bold font-mono text-gray-700">Instruksi Pembayaran:</p>
+                        <p class="font-bold font-mono text-gray-800">Instruksi Pembayaran:</p>
                         <div class="p-3 bg-gray-50 rounded border border-gray-200 font-mono text-[11px] space-y-1">
                             <p>Bank: <strong>BCA (Bank Central Asia)</strong></p>
                             <p>No. Rekening: <strong>123-456-7890</strong></p>
                             <p>Atas Nama: <strong>KMA PRINTWORKS</strong></p>
                         </div>
-                        <p id="printNotes" class="text-[11px] text-gray-500 italic mt-1"></p>
+                        <p id="printNotes" class="text-[11px] text-gray-600 italic mt-1"></p>
                     </div>
 
                     <div class="space-y-1.5 font-mono text-xs text-right">
@@ -362,11 +400,15 @@
                             <span class="text-gray-600">Subtotal:</span>
                             <span id="printSubtotal" class="font-bold">Rp 0</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between" id="printDiscountRow">
                             <span class="text-gray-600">Diskon / Potongan:</span>
                             <span id="printDiscount" class="text-red-600 font-bold">Rp 0</span>
                         </div>
-                        <div class="flex justify-between text-sm font-bold border-t border-b border-gray-300 py-1 text-gray-900">
+                        <div class="flex justify-between" id="printTaxRow">
+                            <span class="text-gray-600">PPN (11%):</span>
+                            <span id="printTax" class="text-blue-700 font-bold">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold border-t border-b border-gray-300 py-1.5 text-gray-900">
                             <span>TOTAL TAGIHAN:</span>
                             <span id="printTotalAmount" class="text-[#009ACC]">Rp 0</span>
                         </div>
@@ -374,7 +416,7 @@
                             <span class="text-gray-600">Uang Muka (DP):</span>
                             <span id="printDpPaid" class="text-green-700 font-bold">Rp 0</span>
                         </div>
-                        <div class="flex justify-between text-sm font-extrabold text-[#DD0072] pt-1">
+                        <div class="flex justify-between text-base font-extrabold text-[#DD0072] pt-1 border-t border-gray-200">
                             <span>SISA TAGIHAN (DUE):</span>
                             <span id="printBalanceDue">Rp 0</span>
                         </div>
@@ -382,13 +424,13 @@
                 </div>
 
                 <!-- Footer Signature -->
-                <div class="flex justify-between items-end pt-8 text-xs text-center border-t border-gray-100">
+                <div class="flex justify-between items-end pt-10 text-xs text-center border-t border-gray-200">
                     <div>
-                        <p class="text-gray-500 mb-14">Penerima / Klien,</p>
+                        <p class="text-gray-500 mb-16">Penerima / Klien,</p>
                         <p class="font-bold border-t border-gray-400 pt-1 w-36 mx-auto">( .............................. )</p>
                     </div>
                     <div>
-                        <p class="text-gray-500 mb-14">Hormat Kami, KMA PRINTWORKS</p>
+                        <p class="text-gray-500 mb-16">Hormat Kami, KMA PRINTWORKS</p>
                         <p class="font-bold border-t border-gray-400 pt-1 w-36 mx-auto">Finance & Management</p>
                     </div>
                 </div>
@@ -408,7 +450,9 @@
 
         let globalInvoices = [];
         let globalProjects = [];
+        let globalItems = [];
         let activeInvoiceFilter = 'ALL';
+        let currentViewingInvoice = null;
 
         window.onload = function() {
             fetchData();
@@ -423,9 +467,20 @@
                     if (data.status === 'success') {
                         globalInvoices = data.invoices || [];
                         globalProjects = data.projects || [];
+                        globalItems = data.items || [];
                         populateProjectDropdown();
                         renderDashboard();
                         document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+
+                        // Cek parameter URL jika ada permintaan buat invoice dari Project Tracker
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const prjParam = urlParams.get('project_id');
+                        if (prjParam) {
+                            openInvoiceModal();
+                            document.getElementById('invProjectSelect').value = prjParam;
+                            autoFillProjectInfo();
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                        }
                     }
                 })
                 .catch(err => {
@@ -453,6 +508,29 @@
             if (p.DP_Amount) {
                 document.getElementById('invDpPaid').value = p.DP_Amount;
             }
+
+            // AUTO-IMPORT RINCIAN ITEM & HARGA JUAL DARI PROJECT KE TAGIHAN
+            const projectItems = globalItems.filter(i => String(i.Project_ID) === String(p.ID));
+            const container = document.getElementById('invItemsContainer');
+            container.innerHTML = '';
+
+            if (projectItems.length > 0) {
+                projectItems.forEach(it => {
+                    addInvoiceItemRow({
+                        name: it.Item_Name || 'Jasa Cetak',
+                        qty: 1,
+                        price: Number(it.Selling_Price || 0)
+                    });
+                });
+            } else {
+                // Jika sub-item belum didaftarkan terpisah, gunakan nama project dan Total Nominal harga jual
+                addInvoiceItemRow({
+                    name: p.Project_Name || 'Jasa Cetak KMA Printworks',
+                    qty: 1,
+                    price: Number(p.Total_Nominal || 0)
+                });
+            }
+
             calculateInvoiceTotals();
         }
 
@@ -520,6 +598,7 @@
                 const dDate = inv.Due_Date ? new Date(inv.Due_Date) : null;
                 const diffDays = dDate ? Math.ceil((dDate - today) / (1000 * 60 * 60 * 24)) : 0;
                 const isOverdue = diffDays < 0 && !isLunas;
+                const hasPpn = Number(inv.Tax || 0) > 0;
 
                 let badgeColor = 'border-process-magenta text-process-magenta';
                 let statusText = inv.Payment_Status || 'Belum Lunas';
@@ -542,6 +621,7 @@
                                 <div class="flex flex-wrap items-center gap-2">
                                     <h3 class="font-bold text-lg text-paper font-spec">${inv.Invoice_Number || inv.Invoice_ID}</h3>
                                     <span class="font-spec text-xs border ${badgeColor} px-2.5 py-0.5 rounded font-bold">${statusText}</span>
+                                    ${hasPpn ? '<span class="font-spec text-[10px] px-2 py-0.5 rounded bg-blue-900/40 text-process-cyan border border-process-cyan/30 font-bold">PPN 11%</span>' : ''}
                                     ${inv.Project_Name ? `<span class="font-spec text-xs text-gray-400 bg-key-black px-2 py-0.5 rounded border border-surface-border">Proyek: ${inv.Project_Name}</span>` : ''}
                                 </div>
                                 <p class="font-spec text-xs text-gray-400 mt-1">
@@ -553,7 +633,7 @@
 
                             <div class="flex flex-wrap items-center gap-2">
                                 <button onclick="openPrintModal('${inv.Invoice_ID}')" class="font-spec text-xs px-3 py-1.5 rounded font-bold bg-process-cyan/20 border border-process-cyan text-process-cyan hover:bg-process-cyan hover:text-key-black transition flex items-center gap-1">
-                                    🖨️ Cetak Invoice
+                                    🖨️ Cetak / PDF A4
                                 </button>
                                 <button onclick="toggleInvoicePaid('${inv.Invoice_ID}')" class="font-spec text-xs px-3 py-1.5 rounded font-bold transition flex items-center gap-1 ${isLunas ? 'bg-process-cyan/20 border border-process-cyan text-process-cyan' : 'bg-surface border border-gray-600 text-gray-400 hover:border-process-cyan hover:text-process-cyan'}">
                                     ${isLunas ? '✅ Lunas' : '💳 Tandai Lunas'}
@@ -570,10 +650,11 @@
                         <!-- Card Footer Details -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center pt-2 font-spec text-xs bg-key-black p-3 rounded gap-2">
                             <span class="text-gray-400">DP Terbayar: <strong class="text-process-yellow">${formatRp(inv.DP_Paid)}</strong></span>
-                            <div class="flex gap-4">
+                            <div class="flex flex-wrap gap-4">
                                 <span>Subtotal: <strong class="text-gray-300">${formatRp(inv.Subtotal)}</strong></span>
-                                <span>Total Tagihan: <strong class="text-process-cyan">${formatRp(inv.Total_Amount)}</strong></span>
-                                <span>Sisa Tagihan: <strong class="${isLunas ? 'text-gray-500' : 'text-process-magenta'}">${formatRp(inv.Balance_Due)}</strong></span>
+                                ${hasPpn ? `<span>PPN 11%: <strong class="text-process-cyan">${formatRp(inv.Tax)}</strong></span>` : ''}
+                                <span>Total Tagihan: <strong class="text-process-cyan font-bold">${formatRp(inv.Total_Amount)}</strong></span>
+                                <span>Sisa Tagihan: <strong class="${isLunas ? 'text-gray-500' : 'text-process-magenta font-bold'}">${formatRp(inv.Balance_Due)}</strong></span>
                             </div>
                         </div>
                     </div>
@@ -591,6 +672,7 @@
             document.getElementById('invNumber').value = 'INV-' + UtilitiesFormatDate(now) + '-' + Math.floor(100 + Math.random() * 900);
             document.getElementById('invDate').value = dateStr;
             document.getElementById('invDueDate').value = dueStr;
+            document.getElementById('invTaxCheck').checked = false;
             document.getElementById('invItemsContainer').innerHTML = '';
             addInvoiceItemRow();
             calculateInvoiceTotals();
@@ -646,11 +728,19 @@
             });
 
             const discount = Number(document.getElementById('invDiscount').value || 0);
-            const totalAmount = Math.max(0, subtotal - discount);
+            const baseAfterDiscount = Math.max(0, subtotal - discount);
+
+            const isPpn = document.getElementById('invTaxCheck').checked;
+            const tax = isPpn ? Math.round(baseAfterDiscount * 0.11) : 0;
+            const totalAmount = baseAfterDiscount + tax;
+
             const dpPaid = Number(document.getElementById('invDpPaid').value || 0);
             const balanceDue = Math.max(0, totalAmount - dpPaid);
 
             document.getElementById('modalSubtotal').innerText = formatRp(subtotal);
+            document.getElementById('modalDiscount').innerText = formatRp(discount);
+            document.getElementById('modalTax').innerText = formatRp(tax);
+            document.getElementById('taxBadgeCalculated').innerText = formatRp(tax);
             document.getElementById('modalTotalAmount').innerText = formatRp(totalAmount);
             document.getElementById('modalBalanceDue').innerText = formatRp(balanceDue);
         }
@@ -669,7 +759,10 @@
             let subtotal = 0;
             items.forEach(it => subtotal += it.total);
             const discount = Number(document.getElementById('invDiscount').value || 0);
-            const totalAmount = Math.max(0, subtotal - discount);
+            const baseAfterDiscount = Math.max(0, subtotal - discount);
+            const isPpn = document.getElementById('invTaxCheck').checked;
+            const tax = isPpn ? Math.round(baseAfterDiscount * 0.11) : 0;
+            const totalAmount = baseAfterDiscount + tax;
             const dpPaid = Number(document.getElementById('invDpPaid').value || 0);
             const balanceDue = Math.max(0, totalAmount - dpPaid);
 
@@ -688,6 +781,7 @@
                 Due_Date: document.getElementById('invDueDate').value,
                 Subtotal: subtotal,
                 Discount: discount,
+                Tax: tax,
                 Total_Amount: totalAmount,
                 DP_Paid: dpPaid,
                 Balance_Due: balanceDue,
@@ -697,8 +791,9 @@
             };
 
             closeInvoiceModal();
-            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Menyimpan Invoice...`;
+            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Menyimpan & Menyiapkan PDF A4...`;
 
+            // 1. Simpan ke Google Sheets
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -714,6 +809,112 @@
                 document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
                 setTimeout(fetchData, 1200);
             });
+
+            // 2. Otomatis Download sebagai File PDF ukuran A4
+            setTimeout(() => {
+                downloadDirectPdf(invoice);
+            }, 300);
+        }
+
+        function downloadDirectPdf(inv) {
+            renderPrintableContent(inv);
+            const element = document.getElementById('printableInvoice');
+            const filename = (inv.Invoice_Number || inv.Invoice_ID) + '.pdf';
+
+            const opt = {
+                margin: [10, 10, 10, 10], // Margin atas, kiri, bawah, kanan (mm)
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(element).save();
+            } else {
+                openPrintModal(inv.Invoice_ID);
+            }
+        }
+
+        function downloadActiveInvoicePdf() {
+            if (currentViewingInvoice) {
+                downloadDirectPdf(currentViewingInvoice);
+            } else {
+                window.print();
+            }
+        }
+
+        function renderPrintableContent(inv) {
+            currentViewingInvoice = inv;
+            document.getElementById('printInvNumber').innerText = inv.Invoice_Number || inv.Invoice_ID;
+            document.getElementById('printInvDate').innerText = formatDate(inv.Invoice_Date);
+            document.getElementById('printInvDueDate').innerText = formatDate(inv.Due_Date);
+            document.getElementById('printClientName').innerText = inv.Client_Name || '-';
+            document.getElementById('printClientPhone').innerText = inv.Client_Phone || '-';
+            document.getElementById('printClientAddress').innerText = inv.Client_Address || '-';
+            document.getElementById('printProjectName').innerText = inv.Project_Name || '-';
+            document.getElementById('printPaymentBadge').innerText = inv.Payment_Status || 'Belum Lunas';
+            document.getElementById('printSubtotal').innerText = formatRp(inv.Subtotal);
+            
+            // Diskon
+            if (Number(inv.Discount || 0) > 0) {
+                document.getElementById('printDiscountRow').classList.remove('hidden');
+                document.getElementById('printDiscount').innerText = '-' + formatRp(inv.Discount);
+            } else {
+                document.getElementById('printDiscountRow').classList.add('hidden');
+            }
+
+            // PPN 11%
+            if (Number(inv.Tax || 0) > 0) {
+                document.getElementById('printTaxRow').classList.remove('hidden');
+                document.getElementById('printTax').innerText = formatRp(inv.Tax);
+            } else {
+                document.getElementById('printTaxRow').classList.add('hidden');
+            }
+
+            document.getElementById('printTotalAmount').innerText = formatRp(inv.Total_Amount);
+            document.getElementById('printDpPaid').innerText = formatRp(inv.DP_Paid);
+            document.getElementById('printBalanceDue').innerText = formatRp(inv.Balance_Due);
+            document.getElementById('printNotes').innerText = inv.Notes ? ('Catatan: ' + inv.Notes) : '';
+
+            const table = document.getElementById('printItemsTable');
+            table.innerHTML = '';
+
+            let items = [];
+            try {
+                if (typeof inv.Items_JSON === 'string' && inv.Items_JSON.length > 2) {
+                    items = JSON.parse(inv.Items_JSON);
+                } else if (Array.isArray(inv.Items)) {
+                    items = inv.Items;
+                }
+            } catch(e) {}
+
+            if (items.length > 0) {
+                items.forEach((it, idx) => {
+                    table.innerHTML += `
+                        <tr class="border-b border-gray-100 font-mono">
+                            <td class="py-2.5">${idx + 1}</td>
+                            <td class="py-2.5 text-gray-900 font-sans font-medium">${it.name || '-'}</td>
+                            <td class="py-2.5 text-center">${it.qty || 1}</td>
+                            <td class="py-2.5 text-right">${formatRp(it.price)}</td>
+                            <td class="py-2.5 text-right font-bold text-gray-900">${formatRp(it.total || (it.qty * it.price))}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                table.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-400">Tidak ada rincian item</td></tr>`;
+            }
+        }
+
+        function openPrintModal(invId) {
+            const inv = globalInvoices.find(item => item.Invoice_ID == invId);
+            if (!inv) return;
+            renderPrintableContent(inv);
+            document.getElementById('printModal').classList.remove('hidden');
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').classList.add('hidden');
         }
 
         function toggleInvoicePaid(invId) {
@@ -762,6 +963,7 @@
             document.getElementById('invPaymentStatus').value = inv.Payment_Status || 'Belum Lunas';
             document.getElementById('invDiscount').value = inv.Discount || 0;
             document.getElementById('invDpPaid').value = inv.DP_Paid || 0;
+            document.getElementById('invTaxCheck').checked = Number(inv.Tax || 0) > 0;
             document.getElementById('invNotes').value = inv.Notes || '';
 
             const container = document.getElementById('invItemsContainer');
@@ -807,60 +1009,6 @@
                 console.warn('Delete notice:', err);
                 setTimeout(fetchData, 1200);
             });
-        }
-
-        function openPrintModal(invId) {
-            const inv = globalInvoices.find(item => item.Invoice_ID == invId);
-            if (!inv) return;
-
-            document.getElementById('printInvNumber').innerText = inv.Invoice_Number || inv.Invoice_ID;
-            document.getElementById('printInvDate').innerText = formatDate(inv.Invoice_Date);
-            document.getElementById('printInvDueDate').innerText = formatDate(inv.Due_Date);
-            document.getElementById('printClientName').innerText = inv.Client_Name || '-';
-            document.getElementById('printClientPhone').innerText = inv.Client_Phone || '-';
-            document.getElementById('printClientAddress').innerText = inv.Client_Address || '-';
-            document.getElementById('printProjectName').innerText = inv.Project_Name || '-';
-            document.getElementById('printPaymentBadge').innerText = inv.Payment_Status || 'Belum Lunas';
-            document.getElementById('printSubtotal').innerText = formatRp(inv.Subtotal);
-            document.getElementById('printDiscount').innerText = formatRp(inv.Discount);
-            document.getElementById('printTotalAmount').innerText = formatRp(inv.Total_Amount);
-            document.getElementById('printDpPaid').innerText = formatRp(inv.DP_Paid);
-            document.getElementById('printBalanceDue').innerText = formatRp(inv.Balance_Due);
-            document.getElementById('printNotes').innerText = inv.Notes ? ('Catatan: ' + inv.Notes) : '';
-
-            const table = document.getElementById('printItemsTable');
-            table.innerHTML = '';
-
-            let items = [];
-            try {
-                if (typeof inv.Items_JSON === 'string' && inv.Items_JSON.length > 2) {
-                    items = JSON.parse(inv.Items_JSON);
-                } else if (Array.isArray(inv.Items)) {
-                    items = inv.Items;
-                }
-            } catch(e) {}
-
-            if (items.length > 0) {
-                items.forEach((it, idx) => {
-                    table.innerHTML += `
-                        <tr class="border-b border-gray-100 font-mono">
-                            <td class="py-2">${idx + 1}</td>
-                            <td class="py-2 text-gray-900 font-sans font-medium">${it.name || '-'}</td>
-                            <td class="py-2 text-center">${it.qty || 1}</td>
-                            <td class="py-2 text-right">${formatRp(it.price)}</td>
-                            <td class="py-2 text-right font-bold text-gray-900">${formatRp(it.total || (it.qty * it.price))}</td>
-                        </tr>
-                    `;
-                });
-            } else {
-                table.innerHTML = `<tr><td colspan="5" class="py-3 text-center text-gray-400">Tidak ada rincian item</td></tr>`;
-            }
-
-            document.getElementById('printModal').classList.remove('hidden');
-        }
-
-        function closePrintModal() {
-            document.getElementById('printModal').classList.add('hidden');
         }
 
         function filterInvoices(filter) {
