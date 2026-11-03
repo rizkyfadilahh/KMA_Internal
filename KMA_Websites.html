@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMA PRINTWORKS — Internal System & Project Tracker</title>
+    
+    <!-- Google Fonts: Source Sans 3 & IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Source+Sans+3:wght@300;400;600;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'key-black': '#111111',
+                        'paper': '#F4F1EA',
+                        'process-cyan': '#009ACC',
+                        'process-magenta': '#DD0072',
+                        'process-yellow': '#F4C900',
+                        'surface': '#1A1A1A',
+                        'surface-border': '#2A2A2A'
+                    },
+                    fontFamily: {
+                        sans: ['"Source Sans 3"', 'sans-serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #111111;
+            color: #F4F1EA;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        .font-spec {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111111; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- CMYK Accent Bar Top -->
+    <div class="h-1.5 w-full flex">
+        <div class="w-1/4 bg-process-cyan"></div>
+        <div class="w-1/4 bg-process-magenta"></div>
+        <div class="w-1/4 bg-process-yellow"></div>
+        <div class="w-1/4 bg-paper"></div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="border-b border-surface-border bg-surface/50 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <svg class="w-10 h-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="85" cy="85" r="45" fill="#009ACC" style="mix-blend-mode: screen;"/>
+                    <circle cx="115" cy="85" r="45" fill="#DD0072" style="mix-blend-mode: screen;"/>
+                    <circle cx="100" cy="115" r="45" fill="#F4C900" style="mix-blend-mode: screen;"/>
+                </svg>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight text-paper">KMA <span class="font-light tracking-widest text-xs block text-gray-400">PRINTWORKS INTERNAL</span></h1>
+                </div>
+            </div>
+
+            <!-- Global Action & Sync Status -->
+            <div class="flex items-center gap-4">
+                <span id="syncStatus" class="font-spec text-xs text-process-cyan flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-process-cyan animate-pulse"></span> Google Sheets Synced
+                </span>
+                <button onclick="openModal()" class="bg-process-magenta hover:bg-opacity-90 text-paper font-semibold px-4 py-2 text-sm rounded transition flex items-center gap-2 shadow-lg">
+                    + Project Baru
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+        
+        <!-- SUB-HEADER INTERNAL MODULE TITLE -->
+        <div class="flex items-center justify-between border-b border-surface-border pb-3">
+            <div class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 rounded-full bg-process-cyan"></span>
+                <h2 class="text-2xl font-extrabold tracking-wider text-paper font-spec">PROJECT TRACKER</h2>
+            </div>
+            <span class="font-spec text-xs text-gray-400 bg-surface px-3 py-1 rounded border border-surface-border">
+                Internal Workflow System
+            </span>
+        </div>
+
+        <!-- Summary Metric Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-surface p-5 rounded border border-surface-border">
+                <p class="font-spec text-xs text-gray-400 uppercase">Total Projects</p>
+                <p id="statTotalProjects" class="font-spec text-2xl font-bold text-paper mt-1">0</p>
+            </div>
+            <div class="bg-surface p-5 rounded border border-surface-border">
+                <p class="font-spec text-xs text-gray-400 uppercase">Total Omzet</p>
+                <p id="statTotalOmzet" class="font-spec text-2xl font-bold text-process-cyan mt-1">Rp 0</p>
+            </div>
+            <div class="bg-surface p-5 rounded border border-surface-border">
+                <p class="font-spec text-xs text-gray-400 uppercase">Est. Total Profit</p>
+                <p id="statTotalProfit" class="font-spec text-2xl font-bold text-process-yellow mt-1">Rp 0</p>
+            </div>
+            <div class="bg-surface p-5 rounded border border-surface-border">
+                <p class="font-spec text-xs text-gray-400 uppercase">Injury Time / Overdue</p>
+                <p id="statDeadlineWarning" class="font-spec text-2xl font-bold text-process-magenta mt-1">0</p>
+            </div>
+        </div>
+
+        <!-- Project List Section -->
+        <div class="space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h3 class="text-lg font-bold tracking-tight text-paper">Daftar Project & Status Pengerjaan</h3>
+                
+                <!-- Filter Tabs -->
+                <div class="flex flex-wrap gap-2 font-spec text-xs">
+                    <button onclick="filterStatus('ALL')" class="px-3 py-1 bg-surface border border-surface-border text-paper rounded">All</button>
+                    <button onclick="filterStatus('In Progress')" class="px-3 py-1 bg-surface border border-surface-border text-process-yellow rounded">In Progress</button>
+                    <button onclick="filterStatus('INJURY TIME')" class="px-3 py-1 bg-surface border border-process-magenta text-process-magenta rounded">Injury Time</button>
+                    <button onclick="filterStatus('Completed')" class="px-3 py-1 bg-surface border border-surface-border text-process-cyan rounded">Completed</button>
+                </div>
+            </div>
+
+            <!-- Project Cards Container -->
+            <div id="projectList" class="space-y-4">
+                <div class="text-center py-12 text-gray-500 font-spec text-sm">Loading data project dari Google Sheets...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Form Create / Edit Project -->
+    <div id="projectModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-surface border border-surface-border rounded-lg max-w-4xl w-full p-6 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+            
+            <div class="flex justify-between items-center border-b border-surface-border pb-4">
+                <h3 class="text-lg font-bold text-paper font-spec flex items-center gap-2">
+                    <span class="w-3 h-3 bg-process-magenta inline-block"></span> Input Data Project KMA
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-paper text-xl font-bold">&times;</button>
+            </div>
+
+            <form id="projectForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                <input type="hidden" id="projectId">
+
+                <!-- Header Info Project -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Nama Project *</label>
+                        <input type="text" id="projectName" required class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper focus:border-process-cyan focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Nama Client *</label>
+                        <input type="text" id="clientName" required class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper focus:border-process-cyan focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Tanggal Start *</label>
+                        <input type="date" id="startDate" required class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-cyan focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Deadline Date *</label>
+                        <input type="date" id="deadlineDate" required class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-cyan focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-xs text-gray-300 mb-1">Tanggal Pengiriman (Delivery)</label>
+                        <input type="date" id="deliveryDate" class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-cyan focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-spec text-xs text-gray-300 mb-1">Status DP</label>
+                            <select id="dpStatus" class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-cyan focus:outline-none">
+                                <option value="Belum DP">Belum DP</option>
+                                <option value="Sudah DP">Sudah DP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-spec text-xs text-gray-300 mb-1">Nominal DP (Rp)</label>
+                            <input type="number" id="dpAmount" value="0" class="w-full bg-key-black border border-surface-border rounded px-3 py-2 text-sm text-paper font-spec focus:border-process-cyan focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Checkbox Manual inside Modal -->
+                <div class="grid grid-cols-2 gap-4 bg-key-black p-4 rounded border border-surface-border">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="paymentStatusCheck" class="w-4 h-4 accent-process-cyan">
+                        <span class="font-spec text-xs font-bold text-process-cyan">Status Pembayaran Lunas</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="workStatusCheck" class="w-4 h-4 accent-process-yellow">
+                        <span class="font-spec text-xs font-bold text-process-yellow">Status Pengerjaan Fisik Selesai</span>
+                    </label>
+                </div>
+
+                <!-- Items Section -->
+                <div class="space-y-3 pt-4 border-t border-surface-border">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-spec text-xs font-bold text-process-cyan uppercase tracking-wider">Item Barang & Margin Vendor</h4>
+                        <button type="button" onclick="addItemRow()" class="font-spec text-xs bg-surface border border-process-cyan text-process-cyan hover:bg-process-cyan hover:text-key-black px-3 py-1 rounded transition">
+                            + Tambah Item
+                        </button>
+                    </div>
+
+                    <div id="itemsContainer" class="space-y-3">
+                        <!-- Dynamic Item Rows -->
+                    </div>
+                </div>
+
+                <!-- Footer Summary & Actions -->
+                <div class="border-t border-surface-border pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="font-spec text-xs space-y-1">
+                        <p>Est. Total Nominal: <span id="modalTotalSelling" class="text-process-cyan font-bold">Rp 0</span></p>
+                        <p>Est. Total Modal Vendor: <span id="modalTotalCost" class="text-gray-400 font-bold">Rp 0</span></p>
+                        <p>Est. Total Profit: <span id="modalTotalProfit" class="text-process-yellow font-bold">Rp 0</span></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 bg-surface text-gray-300 rounded font-spec text-xs hover:bg-gray-800">Batal</button>
+                        <button type="submit" class="px-6 py-2 bg-process-magenta text-paper rounded font-spec text-xs font-bold hover:opacity-90">Simpan ke Sheets</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CMYK Accent Bar Bottom -->
+    <footer class="border-t border-surface-border py-4 text-center font-spec text-xs text-gray-500">
+        KMA PRINTWORKS &copy; 2026 — Internal System & Project Tracker
+    </footer>
+
+    <!-- Script Application -->
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJ7VZuw-btO5u7XgPkzMXBm4GQ7PbKKddcUL3dlYGd_g89Fh2oH0vLRSFLuNmVxxTd0g/exec';
+
+        let globalProjects = [];
+        let globalItems = [];
+        let activeFilter = 'ALL';
+
+        window.onload = function() {
+            fetchData();
+        };
+
+        function fetchData() {
+            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Fetching Sheets...`;
+            
+            fetch(APPS_SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        globalProjects = data.projects || [];
+                        globalItems = data.items || [];
+                        renderDashboard();
+                        document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-cyan"></span> Google Sheets Synced`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-magenta"></span> Sync Error`;
+                });
+        }
+
+        function renderDashboard() {
+            let totalOmzet = 0;
+            let totalProfit = 0;
+            let injuryCount = 0;
+            const today = new Date();
+
+            globalProjects.forEach(p => {
+                totalOmzet += Number(p.Total_Nominal || 0);
+                totalProfit += Number(p.Total_Profit || 0);
+
+                const isLunas = p.Payment_Status === 'Lunas';
+                const isSelesai = p.Work_Status === 'Selesai';
+                const isCompleted = isLunas && isSelesai;
+
+                if (p.Deadline_Date) {
+                    const dDate = new Date(p.Deadline_Date);
+                    const diffDays = Math.ceil((dDate - today) / (1000 * 60 * 60 * 24));
+                    // Injury Time: Belum Completed & Melewati Deadline (diffDays < 0)
+                    if (diffDays < 0 && !isCompleted) {
+                        injuryCount++;
+                    }
+                }
+            });
+
+            document.getElementById('statTotalProjects').innerText = globalProjects.length;
+            document.getElementById('statTotalOmzet').innerText = formatRp(totalOmzet);
+            document.getElementById('statTotalProfit').innerText = formatRp(totalProfit);
+            document.getElementById('statDeadlineWarning').innerText = injuryCount;
+
+            renderProjectList();
+        }
+
+        function renderProjectList() {
+            const container = document.getElementById('projectList');
+            container.innerHTML = '';
+
+            const today = new Date();
+
+            const filtered = globalProjects.filter(p => {
+                const isLunas = p.Payment_Status === 'Lunas';
+                const isSelesai = p.Work_Status === 'Selesai';
+                const isCompleted = isLunas && isSelesai;
+
+                const dDate = p.Deadline_Date ? new Date(p.Deadline_Date) : null;
+                const diffDays = dDate ? Math.ceil((dDate - today) / (1000 * 60 * 60 * 24)) : 0;
+                const isInjury = diffDays < 0 && !isCompleted;
+
+                if (activeFilter === 'ALL') return true;
+                if (activeFilter === 'Completed') return isCompleted;
+                if (activeFilter === 'In Progress') return !isCompleted && !isInjury;
+                if (activeFilter === 'INJURY TIME') return isInjury;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-500 font-spec text-sm">Tidak ada project pada kategori ini.</div>`;
+                return;
+            }
+
+            filtered.slice().reverse().forEach(p => {
+                const projectItems = globalItems.filter(i => i.Project_ID == p.ID);
+                
+                const dDate = p.Deadline_Date ? new Date(p.Deadline_Date) : null;
+                const diffDays = dDate ? Math.ceil((dDate - today) / (1000 * 60 * 60 * 24)) : 0;
+
+                const isLunas = p.Payment_Status === 'Lunas';
+                const isSelesai = p.Work_Status === 'Selesai';
+                const isCompleted = isLunas && isSelesai;
+
+                let badgeColor = 'border-process-cyan text-process-cyan';
+                let reminderText = `${diffDays} hari tersisa`;
+
+                if (isCompleted) {
+                    badgeColor = 'border-gray-500 text-gray-400 bg-gray-900';
+                    reminderText = '✅ COMPLETED';
+                } else if (diffDays < 0) {
+                    badgeColor = 'border-process-magenta text-process-magenta bg-process-magenta/10 animate-pulse font-extrabold';
+                    reminderText = `🚨 INJURY TIME (Lewat ${Math.abs(diffDays)} Hari)`;
+                } else if (isSelesai && !isLunas) {
+                    badgeColor = 'border-process-yellow text-process-yellow bg-process-yellow/10';
+                    reminderText = `⚠️ FISIK SELESAI (PENDING PELUNASAN)`;
+                } else if (diffDays <= 3) {
+                    badgeColor = 'border-process-yellow text-process-yellow animate-pulse';
+                    reminderText = `Deadline H-${diffDays}`;
+                }
+
+                let itemsHtml = '';
+                projectItems.forEach(it => {
+                    itemsHtml += `
+                        <tr class="border-b border-surface-border/50 text-xs font-spec">
+                            <td class="py-2 text-paper">${it.Item_Name}</td>
+                            <td class="py-2 text-gray-400">${it.Vendor_Name || '-'}</td>
+                            <td class="py-2 text-gray-400">Kirim: ${formatDate(it.Sent_To_Vendor_Date)} | Terima: ${formatDate(it.Received_From_Vendor_Date)}</td>
+                            <td class="py-2 text-right text-gray-400">${formatRp(it.Cost_Price)}</td>
+                            <td class="py-2 text-right text-process-cyan">${formatRp(it.Selling_Price)}</td>
+                            <td class="py-2 text-right font-bold text-process-yellow">${formatRp(it.Item_Profit)}</td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-surface p-5 rounded border border-surface-border space-y-4">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-surface-border pb-3">
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h3 class="font-bold text-lg text-paper">${p.Project_Name}</h3>
+                                    <span class="font-spec text-xs border ${badgeColor} px-2.5 py-0.5 rounded font-bold">${reminderText}</span>
+                                </div>
+                                <p class="font-spec text-xs text-gray-400 mt-1">Client: <span class="text-paper">${p.Client_Name}</span> | Start: ${formatDate(p.Start_Date)} | Deadline: ${formatDate(p.Deadline_Date)} | Kirim: ${formatDate(p.Delivery_Date)}</p>
+                            </div>
+
+                            <!-- ACTION BUTTONS: LUNAS & SELESAI -->
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="togglePaymentState('${p.ID}')" class="font-spec text-xs px-3 py-1.5 rounded font-bold transition flex items-center gap-1 ${isLunas ? 'bg-process-cyan/20 border border-process-cyan text-process-cyan' : 'bg-surface border border-gray-600 text-gray-400 hover:border-process-cyan hover:text-process-cyan'}">
+                                    ${isLunas ? '✅ LUNAS' : '💳 Set Lunas'}
+                                </button>
+                                <button onclick="toggleWorkState('${p.ID}')" class="font-spec text-xs px-3 py-1.5 rounded font-bold transition flex items-center gap-1 ${isSelesai ? 'bg-process-yellow/20 border border-process-yellow text-process-yellow' : 'bg-surface border border-gray-600 text-gray-400 hover:border-process-yellow hover:text-process-yellow'}">
+                                    ${isSelesai ? '🏁 SELESAI' : '🛠️ Set Selesai'}
+                                </button>
+                                <button onclick="editProject('${p.ID}')" class="font-spec text-xs bg-surface border border-surface-border hover:border-paper text-paper px-3 py-1.5 rounded">Edit</button>
+                            </div>
+                        </div>
+
+                        <!-- Items Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="font-spec text-xs text-gray-400 uppercase border-b border-surface-border">
+                                        <th class="pb-1">Item Barang</th>
+                                        <th class="pb-1">Vendor</th>
+                                        <th class="pb-1">Jadwal Vendor</th>
+                                        <th class="pb-1 text-right">Modal Vendor</th>
+                                        <th class="pb-1 text-right">Harga Jual</th>
+                                        <th class="pb-1 text-right">Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml || '<tr><td colspan="6" class="py-2 text-center text-gray-500 font-spec text-xs">Belum ada item ditambahkan</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Card Footer Profit Totals -->
+                        <div class="flex justify-between items-center pt-2 font-spec text-xs bg-key-black p-3 rounded">
+                            <span class="text-gray-400">DP: <strong class="${p.DP_Status === 'Sudah DP' ? 'text-process-cyan' : 'text-process-magenta'}">${p.DP_Status} (${formatRp(p.DP_Amount)})</strong></span>
+                            <div class="flex gap-4">
+                                <span>Total Modal: <strong class="text-gray-300">${formatRp(p.Total_Cost)}</strong></span>
+                                <span>Total Omzet: <strong class="text-process-cyan">${formatRp(p.Total_Nominal)}</strong></span>
+                                <span>Profit: <strong class="text-process-yellow">${formatRp(p.Total_Profit)}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function togglePaymentState(id) {
+            const p = globalProjects.find(item => item.ID == id);
+            if (!p) return;
+            p.Payment_Status = (p.Payment_Status === 'Lunas') ? 'Belum Lunas' : 'Lunas';
+            saveQuickStateUpdate(p);
+        }
+
+        function toggleWorkState(id) {
+            const p = globalProjects.find(item => item.ID == id);
+            if (!p) return;
+            p.Work_Status = (p.Work_Status === 'Selesai') ? 'Belum Selesai' : 'Selesai';
+            saveQuickStateUpdate(p);
+        }
+
+        function saveQuickStateUpdate(p) {
+            const projectItems = globalItems.filter(i => i.Project_ID == p.ID);
+            
+            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Updating State...`;
+            renderDashboard();
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'save_project', project: p, items: projectItems })
+            })
+            .then(res => res.json())
+            .then(res => {
+                fetchData();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Gagal mengupdate status ke Google Sheets');
+            });
+        }
+
+        // Modal Functions
+        function openModal() {
+            document.getElementById('projectForm').reset();
+            document.getElementById('projectId').value = 'PRJ-' + Date.now();
+            document.getElementById('paymentStatusCheck').checked = false;
+            document.getElementById('workStatusCheck').checked = false;
+            document.getElementById('itemsContainer').innerHTML = '';
+            addItemRow();
+            calculateModalTotals();
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        function addItemRow(data = {}) {
+            const container = document.getElementById('itemsContainer');
+            const rowId = Date.now() + Math.random().toString(36).substring(2, 5);
+
+            const div = document.createElement('div');
+            div.className = 'bg-key-black p-3 rounded border border-surface-border space-y-2 item-row';
+            div.id = `item-row-${rowId}`;
+            div.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div>
+                        <label class="block font-spec text-[10px] text-gray-400">Nama Barang/Jasa</label>
+                        <input type="text" value="${data.Item_Name || ''}" required class="item-name w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-[10px] text-gray-400">Nama Vendor</label>
+                        <input type="text" value="${data.Vendor_Name || ''}" class="item-vendor w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <div>
+                            <label class="block font-spec text-[10px] text-gray-400">Modal Vendor (Rp)</label>
+                            <input type="number" value="${data.Cost_Price || 0}" oninput="calculateModalTotals()" required class="item-cost w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper font-spec focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-spec text-[10px] text-gray-400">Harga Jual (Rp)</label>
+                            <input type="number" value="${data.Selling_Price || 0}" oninput="calculateModalTotals()" required class="item-selling w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper font-spec focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end">
+                    <div>
+                        <label class="block font-spec text-[10px] text-gray-400">Tgl Dikirim ke Vendor</label>
+                        <input type="date" value="${data.Sent_To_Vendor_Date ? data.Sent_To_Vendor_Date.substring(0,10) : ''}" class="item-sent w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper font-spec focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-spec text-[10px] text-gray-400">Tgl Diterima dari Vendor</label>
+                        <input type="date" value="${data.Received_From_Vendor_Date ? data.Received_From_Vendor_Date.substring(0,10) : ''}" class="item-recv w-full bg-surface border border-surface-border rounded px-2 py-1 text-xs text-paper font-spec focus:outline-none">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-spec text-xs">Margin: <strong class="item-profit-text text-process-yellow">Rp 0</strong></span>
+                        <button type="button" onclick="removeItemRow('item-row-${rowId}')" class="text-process-magenta font-spec text-xs hover:underline">Hapus</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            calculateModalTotals();
+        }
+
+        function removeItemRow(id) {
+            const elem = document.getElementById(id);
+            if (elem) elem.remove();
+            calculateModalTotals();
+        }
+
+        function calculateModalTotals() {
+            let totalSelling = 0;
+            let totalCost = 0;
+
+            document.querySelectorAll('.item-row').forEach(row => {
+                const cost = Number(row.querySelector('.item-cost').value || 0);
+                const selling = Number(row.querySelector('.item-selling').value || 0);
+                const profit = selling - cost;
+
+                row.querySelector('.item-profit-text').innerText = formatRp(profit);
+                totalSelling += selling;
+                totalCost += cost;
+            });
+
+            const totalProfit = totalSelling - totalCost;
+            document.getElementById('modalTotalSelling').innerText = formatRp(totalSelling);
+            document.getElementById('modalTotalCost').innerText = formatRp(totalCost);
+            document.getElementById('modalTotalProfit').innerText = formatRp(totalProfit);
+        }
+
+        function editProject(id) {
+            const p = globalProjects.find(item => item.ID == id);
+            if (!p) return;
+
+            openModal();
+            document.getElementById('projectId').value = p.ID;
+            document.getElementById('projectName').value = p.Project_Name;
+            document.getElementById('clientName').value = p.Client_Name;
+            document.getElementById('startDate').value = p.Start_Date ? p.Start_Date.substring(0,10) : '';
+            document.getElementById('deadlineDate').value = p.Deadline_Date ? p.Deadline_Date.substring(0,10) : '';
+            document.getElementById('deliveryDate').value = p.Delivery_Date ? p.Delivery_Date.substring(0,10) : '';
+            document.getElementById('dpStatus').value = p.DP_Status;
+            document.getElementById('dpAmount').value = p.DP_Amount || 0;
+            document.getElementById('paymentStatusCheck').checked = (p.Payment_Status === 'Lunas');
+            document.getElementById('workStatusCheck').checked = (p.Work_Status === 'Selesai');
+
+            const pItems = globalItems.filter(i => i.Project_ID == p.ID);
+            document.getElementById('itemsContainer').innerHTML = '';
+            if (pItems.length > 0) {
+                pItems.forEach(it => addItemRow(it));
+            } else {
+                addItemRow();
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const items = [];
+            document.querySelectorAll('.item-row').forEach(row => {
+                items.push({
+                    Item_Name: row.querySelector('.item-name').value,
+                    Vendor_Name: row.querySelector('.item-vendor').value,
+                    Cost_Price: row.querySelector('.item-cost').value,
+                    Selling_Price: row.querySelector('.item-selling').value,
+                    Sent_To_Vendor_Date: row.querySelector('.item-sent').value,
+                    Received_From_Vendor_Date: row.querySelector('.item-recv').value
+                });
+            });
+
+            const isLunas = document.getElementById('paymentStatusCheck').checked;
+            const isSelesai = document.getElementById('workStatusCheck').checked;
+
+            const project = {
+                ID: document.getElementById('projectId').value,
+                Project_Name: document.getElementById('projectName').value,
+                Client_Name: document.getElementById('clientName').value,
+                Start_Date: document.getElementById('startDate').value,
+                Deadline_Date: document.getElementById('deadlineDate').value,
+                Delivery_Date: document.getElementById('deliveryDate').value,
+                DP_Status: document.getElementById('dpStatus').value,
+                DP_Amount: document.getElementById('dpAmount').value,
+                Payment_Status: isLunas ? 'Lunas' : 'Belum Lunas',
+                Work_Status: isSelesai ? 'Selesai' : 'Belum Selesai',
+                Status: (isLunas && isSelesai) ? 'Completed' : 'In Progress'
+            };
+
+            closeModal();
+            document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-process-yellow animate-ping"></span> Saving to Sheets...`;
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'save_project', project: project, items: items })
+            })
+            .then(res => res.json())
+            .then(res => {
+                fetchData();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Gagal menyimpan ke Google Sheets');
+            });
+        }
+
+        function filterStatus(status) {
+            activeFilter = status;
+            renderProjectList();
+        }
+
+        function formatRp(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0);
+        }
+
+        function formatDate(dStr) {
+            if (!dStr) return '-';
+            const d = new Date(dStr);
+            return isNaN(d) ? '-' : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        }
+    </script>
+</body>
+</html>
