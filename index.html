@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMA PRINTWORKS — Internal Portal & Workspace Hub</title>
+    
+    <!-- Google Fonts: Source Sans 3 & IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'key-black': '#111111',
+                        'paper': '#F4F1EA',
+                        'process-cyan': '#009ACC',
+                        'process-magenta': '#DD0072',
+                        'process-yellow': '#F4C900',
+                        'surface': '#1A1A1A',
+                        'surface-border': '#2A2A2A',
+                        'surface-hover': '#242424'
+                    },
+                    fontFamily: {
+                        sans: ['"Source Sans 3"', 'sans-serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #111111;
+            color: #F4F1EA;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        .font-spec {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111111; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- CMYK Accent Bar Top -->
+    <div class="h-1.5 w-full flex">
+        <div class="w-1/4 bg-process-cyan"></div>
+        <div class="w-1/4 bg-process-magenta"></div>
+        <div class="w-1/4 bg-process-yellow"></div>
+        <div class="w-1/4 bg-paper"></div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="border-b border-surface-border bg-surface/50 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <svg class="w-10 h-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="85" cy="85" r="45" fill="#009ACC" style="mix-blend-mode: screen;"/>
+                    <circle cx="115" cy="85" r="45" fill="#DD0072" style="mix-blend-mode: screen;"/>
+                    <circle cx="100" cy="115" r="45" fill="#F4C900" style="mix-blend-mode: screen;"/>
+                </svg>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight text-paper">KMA <span class="font-light tracking-widest text-xs block text-gray-400">PRINTWORKS INTERNAL</span></h1>
+                </div>
+            </div>
+
+            <!-- Global Status & Live Time -->
+            <div class="flex items-center gap-4 font-spec text-xs">
+                <span id="liveClock" class="text-gray-400 bg-surface px-3 py-1.5 rounded border border-surface-border">
+                    Loading Time...
+                </span>
+                <span class="text-process-cyan flex items-center gap-2 bg-process-cyan/10 px-3 py-1.5 rounded border border-process-cyan/30">
+                    <span class="w-2 h-2 rounded-full bg-process-cyan animate-pulse"></span> Sistem Operasional Aktif
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-10 w-full space-y-10 flex-1">
+        
+        <!-- Welcome Hero Section -->
+        <div class="bg-surface border border-surface-border rounded-xl p-6 md:p-8 relative overflow-hidden">
+            <!-- Decorative CMYK background glow -->
+            <div class="absolute -top-16 -right-16 w-48 h-48 bg-process-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-process-magenta/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-process-cyan"></span>
+                        <span class="font-spec text-xs uppercase tracking-widest text-process-cyan font-bold">Internal Workspace Hub</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-paper tracking-tight">
+                        Selamat Datang di Portal Internal KMA Printworks
+                    </h2>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed">
+                        Pusat navigasi alur kerja operasional percetakan, pemantauan timeline produksi, manajemen vendor rekanan, penerbitan invoice penagihan, serta laporan finansial usaha.
+                    </p>
+                </div>
+                
+                <div class="bg-key-black/60 border border-surface-border p-4 rounded-lg font-spec text-xs space-y-1.5 min-w-[220px]">
+                    <div class="text-gray-400 flex justify-between">
+                        <span>Workspace:</span>
+                        <span class="text-paper font-bold">KMA Internal</span>
+                    </div>
+                    <div class="text-gray-400 flex justify-between">
+                        <span>Database:</span>
+                        <span class="text-process-cyan font-bold">Google Cloud Sheets</span>
+                    </div>
+                    <div class="text-gray-400 flex justify-between">
+                        <span>Akses:</span>
+                        <span class="text-process-yellow font-bold">Admin Internal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="flex items-center justify-between border-b border-surface-border pb-3">
+            <div class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 rounded-full bg-process-magenta"></span>
+                <h3 class="text-xl md:text-2xl font-extrabold tracking-wider text-paper font-spec">MODUL SISTEM UTAMA</h3>
+            </div>
+            <span class="font-spec text-xs text-gray-400 bg-surface px-3 py-1 rounded border border-surface-border">
+                Pilih Modul Alur Kerja
+            </span>
+        </div>
+
+        <!-- 4 Grid Menu Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Card 1: Project Tracker -->
+            <a href="projecttracker.html" class="group bg-surface hover:bg-surface-hover border border-surface-border hover:border-process-cyan rounded-xl p-6 transition-all duration-300 flex flex-col justify-between relative shadow-lg hover:shadow-process-cyan/10 hover:-translate-y-1">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 rounded-lg bg-process-cyan/10 border border-process-cyan/30 flex items-center justify-center text-process-cyan group-hover:bg-process-cyan group-hover:text-key-black transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                        <span class="font-spec text-[10px] px-2 py-0.5 rounded border border-process-cyan text-process-cyan bg-process-cyan/10 font-bold">
+                            AKTIF
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="font-spec text-[11px] text-gray-400 uppercase tracking-wider block mb-1">Produksi & Operasional</span>
+                        <h4 class="text-xl font-bold text-paper group-hover:text-process-cyan transition-colors">Project Tracker</h4>
+                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+                            Monitoring status pengerjaan fisik, timeline deadline, status pelunasan pembayaran, margin keuntungan, serta peringatan injury time produksi.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-surface-border flex items-center justify-between font-spec text-xs text-process-cyan font-bold">
+                    <span>Buka Modul</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </a>
+
+            <!-- Card 2: Invoicing -->
+            <div onclick="openComingSoon('Invoicing', 'Penerbitan tagihan invoice resmi, kwitansi penerimaan uang muka (DP), tracking status pelunasan client, serta export invoice berformat PDF standar percetakan.')" class="cursor-pointer group bg-surface hover:bg-surface-hover border border-surface-border hover:border-process-magenta rounded-xl p-6 transition-all duration-300 flex flex-col justify-between relative shadow-lg hover:shadow-process-magenta/10 hover:-translate-y-1">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 rounded-lg bg-process-magenta/10 border border-process-magenta/30 flex items-center justify-center text-process-magenta group-hover:bg-process-magenta group-hover:text-paper transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-spec text-[10px] px-2 py-0.5 rounded border border-process-magenta text-process-magenta bg-process-magenta/10 font-bold">
+                            SEGERA HADIR
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="font-spec text-[11px] text-gray-400 uppercase tracking-wider block mb-1">Billing & Tagihan</span>
+                        <h4 class="text-xl font-bold text-paper group-hover:text-process-magenta transition-colors">Invoicing</h4>
+                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+                            Pembuatan invoice penagihan resmi otomatis untuk klien, kwitansi tanda terima DP, riwayat invoice terbit, serta konfirmasi pembayaran.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-surface-border flex items-center justify-between font-spec text-xs text-process-magenta font-bold">
+                    <span>Lihat Detail Modul</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Vendor Management -->
+            <div onclick="openComingSoon('Vendor Management', 'Direktori lengkap vendor percetakan & finishing, histori pengiriman & penerimaan pesanan, perbandingan harga modal antar-vendor, dan evaluasi ketepatan waktu.')" class="cursor-pointer group bg-surface hover:bg-surface-hover border border-surface-border hover:border-process-yellow rounded-xl p-6 transition-all duration-300 flex flex-col justify-between relative shadow-lg hover:shadow-process-yellow/10 hover:-translate-y-1">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 rounded-lg bg-process-yellow/10 border border-process-yellow/30 flex items-center justify-center text-process-yellow group-hover:bg-process-yellow group-hover:text-key-black transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <span class="font-spec text-[10px] px-2 py-0.5 rounded border border-process-yellow text-process-yellow bg-process-yellow/10 font-bold">
+                            SEGERA HADIR
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="font-spec text-[11px] text-gray-400 uppercase tracking-wider block mb-1">Rekan & Sub-Kontraktor</span>
+                        <h4 class="text-xl font-bold text-paper group-hover:text-process-yellow transition-colors">Vendor Management</h4>
+                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+                            Database rekanan vendor percetakan, tracking tanggal kirim & terima barang produksi, evaluasi performa ketepatan waktu, dan kontak penanggung jawab.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-surface-border flex items-center justify-between font-spec text-xs text-process-yellow font-bold">
+                    <span>Lihat Detail Modul</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Laporan Keuangan -->
+            <div onclick="openComingSoon('Laporan Keuangan', 'Rekapitulasi omzet berkala, analisis laba kotor & bersih per periode, arus kas kasbon & modal vendor, serta export laporan keuangan periodik.')" class="cursor-pointer group bg-surface hover:bg-surface-hover border border-surface-border hover:border-paper rounded-xl p-6 transition-all duration-300 flex flex-col justify-between relative shadow-lg hover:shadow-paper/10 hover:-translate-y-1">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 rounded-lg bg-paper/10 border border-paper/30 flex items-center justify-center text-paper group-hover:bg-paper group-hover:text-key-black transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-spec text-[10px] px-2 py-0.5 rounded border border-gray-400 text-gray-300 bg-surface font-bold">
+                            SEGERA HADIR
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="font-spec text-[11px] text-gray-400 uppercase tracking-wider block mb-1">Finansial & Pembukuan</span>
+                        <h4 class="text-xl font-bold text-paper group-hover:text-gray-200 transition-colors">Laporan Keuangan</h4>
+                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+                            Grafik rekap laba rugi bulanan, monitoring total omzet kumulatif, perbandingan margin per proyek, dan export rekapan ke spreadsheet.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-surface-border flex items-center justify-between font-spec text-xs text-paper font-bold">
+                    <span>Lihat Detail Modul</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Summary & System Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+            <div class="bg-surface p-5 rounded-lg border border-surface-border flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-process-cyan/20 border border-process-cyan flex items-center justify-center font-spec font-bold text-process-cyan">
+                    01
+                </div>
+                <div>
+                    <h5 class="font-bold text-sm text-paper">Sinkronisasi Realtime</h5>
+                    <p class="text-xs text-gray-400">Terhubung langsung ke Google Sheets database terpusat.</p>
+                </div>
+            </div>
+
+            <div class="bg-surface p-5 rounded-lg border border-surface-border flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-process-magenta/20 border border-process-magenta flex items-center justify-center font-spec font-bold text-process-magenta">
+                    02
+                </div>
+                <div>
+                    <h5 class="font-bold text-sm text-paper">Workflow Terstandar</h5>
+                    <p class="text-xs text-gray-400">Monitoring produksi presisi mulai dari order hingga delivery.</p>
+                </div>
+            </div>
+
+            <div class="bg-surface p-5 rounded-lg border border-surface-border flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-process-yellow/20 border border-process-yellow flex items-center justify-center font-spec font-bold text-process-yellow">
+                    03
+                </div>
+                <div>
+                    <h5 class="font-bold text-sm text-paper">Keamanan Internal</h5>
+                    <p class="text-xs text-gray-400">Dikhususkan untuk staf dan manajemen KMA Printworks.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Coming Soon -->
+    <div id="comingSoonModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface border border-surface-border rounded-xl max-w-md w-full p-6 space-y-6 relative shadow-2xl">
+            <div class="flex justify-between items-center border-b border-surface-border pb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-process-yellow inline-block rounded-sm"></span>
+                    <h3 id="modalTitle" class="text-lg font-bold text-paper font-spec">Modul Dalam Pengembangan</h3>
+                </div>
+                <button onclick="closeComingSoon()" class="text-gray-400 hover:text-paper text-2xl font-bold leading-none">&times;</button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 rounded-lg bg-key-black border border-surface-border">
+                    <p id="modalDesc" class="text-sm text-gray-300 leading-relaxed font-sans"></p>
+                </div>
+
+                <div class="space-y-2 font-spec text-xs text-gray-400">
+                    <div class="flex items-center gap-2 text-process-yellow">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Status: Masuk Roadmap Pengembangan Tahap Berikutnya</span>
+                    </div>
+                    <p>Modul saat ini sedang dipersiapkan untuk integrasi data dengan alur kerja Project Tracker.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-surface-border">
+                <button onclick="closeComingSoon()" class="px-5 py-2 bg-process-cyan hover:bg-opacity-90 text-key-black font-spec text-xs font-bold rounded transition">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CMYK Accent Bar Bottom -->
+    <footer class="border-t border-surface-border py-4 text-center font-spec text-xs text-gray-500 bg-surface/30">
+        KMA PRINTWORKS &copy; 2026 — Internal System & Workspace Hub
+    </footer>
+
+    <!-- Script Application -->
+    <script>
+        function updateLiveClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            };
+            const timeStr = now.toLocaleDateString('id-ID', options);
+            const el = document.getElementById('liveClock');
+            if (el) el.innerText = timeStr.replace(',', ' •');
+        }
+
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        function openComingSoon(title, desc) {
+            document.getElementById('modalTitle').innerText = 'Modul ' + title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('comingSoonModal').classList.remove('hidden');
+        }
+
+        function closeComingSoon() {
+            document.getElementById('comingSoonModal').classList.add('hidden');
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeComingSoon();
+        });
+    </script>
+</body>
+</html>
