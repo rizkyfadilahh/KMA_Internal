@@ -1,13 +1,44 @@
 /* ==========================================================================
    KMA PRINTWORKS - BRAND GUIDELINE THEME STYLES (LIGHT & DARK)
    Based on KMA Brand Guideline 2026:
-   - Light (Primary): Warm Paper (#F4F1EA) Canvas with White (#FFFFFF) & Key Black (#111111)
-   - Dark (Reversed): Key Black (#111111) Canvas with Paper (#F4F1EA) & Dark Surface (#1A1A1A)
+   - Light: Warm Paper (#F4F1EA) Canvas with White (#FFFFFF) & Key Black (#111111)
+   - Dark: Key Black (#111111) Canvas with Paper (#F4F1EA) & Dark Surface (#1A1A1A)
    ========================================================================== */
 
-/* Smooth Transition */
+/* Smooth Transition for Base Elements */
 body {
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ==========================================================================
+   VIEW TRANSITIONS (Circular Ripple Expanding from Clicked Button)
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999;
+}
+
+/* ==========================================================================
+   CMYK BAR 4TH SEGMENT (K: Key Black / Paper)
+   Dark mode: 4th color is Paper/White (#F4F1EA)
+   Light mode: 4th color switches to Key Black (#111111)
+   ========================================================================== */
+.cmyk-k-bar {
+    background-color: #F4F1EA !important;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.light-theme .cmyk-k-bar {
+    background-color: #111111 !important;
 }
 
 /* ==========================================================================
@@ -128,7 +159,7 @@ body.light-theme .brand-logo-cmyk circle {
     mix-blend-mode: multiply !important;
 }
 
-/* Modals */
+/* Modals Backdrops */
 body.light-theme .bg-black\/80 {
     background-color: rgba(17, 17, 17, 0.45) !important;
 }
@@ -141,9 +172,9 @@ body.light-theme::-webkit-scrollbar-thumb {
     background: #C8C2B6; 
 }
 
-/* Theme Toggle Button */
+/* Theme Toggle Icon Button */
 #themeToggleBtn {
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 body.light-theme #themeToggleBtn {
     background-color: #FFFFFF !important;
