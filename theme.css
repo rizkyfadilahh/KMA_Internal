@@ -1,0 +1,157 @@
+/* ==========================================================================
+   KMA PRINTWORKS - BRAND GUIDELINE THEME STYLES (LIGHT & DARK)
+   Based on KMA Brand Guideline 2026:
+   - Light (Primary): Warm Paper (#F4F1EA) Canvas with White (#FFFFFF) & Key Black (#111111)
+   - Dark (Reversed): Key Black (#111111) Canvas with Paper (#F4F1EA) & Dark Surface (#1A1A1A)
+   ========================================================================== */
+
+/* Smooth Transition */
+body {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ==========================================================================
+   LIGHT THEME OVERRIDES (.light-theme)
+   ========================================================================== */
+
+body.light-theme {
+    background-color: #F4F1EA !important; /* KMA Brand Paper Canvas */
+    color: #111111 !important; /* Key Black */
+}
+
+/* Header & Footer */
+body.light-theme header {
+    background-color: rgba(244, 241, 234, 0.95) !important;
+    border-color: #E2DDD5 !important;
+}
+
+body.light-theme footer {
+    background-color: rgba(244, 241, 234, 0.7) !important;
+    border-color: #E2DDD5 !important;
+    color: #555555 !important;
+}
+
+/* Cards & Surfaces */
+body.light-theme .bg-surface {
+    background-color: #FFFFFF !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .bg-surface\/50 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+body.light-theme .bg-surface\/30 {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body.light-theme .hover\:bg-surface-hover:hover,
+body.light-theme .hover\:bg-surface\/50:hover,
+body.light-theme .hover\:bg-surface:hover {
+    background-color: #FAF8F4 !important;
+}
+
+/* Borders */
+body.light-theme .border-surface-border {
+    border-color: #E2DDD5 !important;
+}
+
+body.light-theme .border-surface-border\/50 {
+    border-color: rgba(226, 221, 213, 0.7) !important;
+}
+
+body.light-theme .border-surface-border\/40 {
+    border-color: rgba(226, 221, 213, 0.5) !important;
+}
+
+/* Inner containers, Form groups, Table heads */
+body.light-theme .bg-key-black {
+    background-color: #ECE7DE !important;
+}
+
+body.light-theme .bg-key-black\/60 {
+    background-color: rgba(236, 231, 222, 0.9) !important;
+}
+
+/* Typography Overrides */
+body.light-theme .text-paper {
+    color: #111111 !important;
+}
+
+body.light-theme .text-gray-400 {
+    color: #5A606A !important;
+}
+
+body.light-theme .text-gray-300 {
+    color: #1F2937 !important;
+}
+
+body.light-theme .text-gray-500 {
+    color: #6B7280 !important;
+}
+
+/* CMYK Brand Contrast Optimization for Light Background */
+body.light-theme .text-process-cyan {
+    color: #0082AD !important;
+}
+
+body.light-theme .text-process-magenta {
+    color: #C20063 !important;
+}
+
+body.light-theme .text-process-yellow {
+    color: #A37A00 !important;
+}
+
+body.light-theme .border-process-yellow {
+    border-color: #B88A00 !important;
+}
+
+/* Inputs, Selects & Textareas */
+body.light-theme input:not([type="checkbox"]):not([type="radio"]), 
+body.light-theme select,
+body.light-theme textarea {
+    background-color: #FFFFFF !important;
+    color: #111111 !important;
+    border-color: #D6D0C5 !important;
+}
+
+body.light-theme input:focus, 
+body.light-theme select:focus,
+body.light-theme textarea:focus {
+    border-color: #0082AD !important;
+    background-color: #FFFFFF !important;
+}
+
+/* CMYK Circles Subtractive Blend Mode (Multiply on White/Paper Canvas) */
+body.light-theme .brand-logo-cmyk circle {
+    mix-blend-mode: multiply !important;
+}
+
+/* Modals */
+body.light-theme .bg-black\/80 {
+    background-color: rgba(17, 17, 17, 0.45) !important;
+}
+
+/* Scrollbars */
+body.light-theme::-webkit-scrollbar-track { 
+    background: #F4F1EA; 
+}
+body.light-theme::-webkit-scrollbar-thumb { 
+    background: #C8C2B6; 
+}
+
+/* Theme Toggle Button */
+#themeToggleBtn {
+    transition: all 0.2s ease;
+}
+body.light-theme #themeToggleBtn {
+    background-color: #FFFFFF !important;
+    border-color: #D1C9BE !important;
+    color: #111111 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+body.light-theme #themeToggleBtn:hover {
+    border-color: #0082AD !important;
+    background-color: #FAF8F4 !important;
+}

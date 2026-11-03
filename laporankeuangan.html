@@ -90,7 +90,7 @@
                     <svg class="w-4 h-4 text-process-magenta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span class="hidden sm:inline">Invoicing</span>
                 </a>
-                <svg class="w-10 h-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-10 h-10 brand-logo-cmyk" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="85" cy="85" r="45" fill="#009ACC" style="mix-blend-mode: screen;"/>
                     <circle cx="115" cy="85" r="45" fill="#DD0072" style="mix-blend-mode: screen;"/>
                     <circle cx="100" cy="115" r="45" fill="#F4C900" style="mix-blend-mode: screen;"/>
@@ -100,11 +100,15 @@
                 </div>
             </div>
 
-            <!-- Global Action & Sync Status -->
-            <div class="flex items-center gap-4">
+            <!-- Global Action, Theme Toggle & Sync Status -->
+            <div class="flex flex-wrap items-center gap-3">
                 <span id="syncStatus" class="font-spec text-xs text-process-cyan flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-process-cyan animate-pulse"></span> Google Sheets Synced
                 </span>
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="font-spec text-xs px-3 py-1.5 rounded-lg border border-surface-border bg-surface hover:border-process-cyan text-paper transition flex items-center gap-1.5 font-bold cursor-pointer shadow-sm" title="Ubah Tema Light / Dark">
+                    <span id="themeToggleIcon">☀️</span>
+                    <span id="themeToggleText">Light Mode</span>
+                </button>
                 <button onclick="openTransactionModal()" class="bg-process-yellow hover:bg-opacity-90 text-key-black font-semibold px-4 py-2 text-sm rounded transition flex items-center gap-2 shadow-lg">
                     + Catat Transaksi Kas
                 </button>

@@ -49,6 +49,12 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #111111; }
         ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+    </style>
+
+    <!-- KMA Brand Guideline Theme Styles & Script -->
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js"></script>
+    <style>
 
         /* A4 Page Formatting for Direct Print & html2pdf */
         #printableInvoice {
@@ -102,7 +108,7 @@
                     <svg class="w-4 h-4 text-process-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     <span class="hidden sm:inline">Keuangan</span>
                 </a>
-                <svg class="w-10 h-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-10 h-10 brand-logo-cmyk" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="85" cy="85" r="45" fill="#009ACC" style="mix-blend-mode: screen;"/>
                     <circle cx="115" cy="85" r="45" fill="#DD0072" style="mix-blend-mode: screen;"/>
                     <circle cx="100" cy="115" r="45" fill="#F4C900" style="mix-blend-mode: screen;"/>
@@ -112,11 +118,15 @@
                 </div>
             </div>
 
-            <!-- Global Action & Sync Status -->
-            <div class="flex items-center gap-4">
+            <!-- Global Action, Theme Toggle & Sync Status -->
+            <div class="flex flex-wrap items-center gap-3">
                 <span id="syncStatus" class="font-spec text-xs text-process-cyan flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-process-cyan animate-pulse"></span> Google Sheets Synced
                 </span>
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="font-spec text-xs px-3 py-1.5 rounded-lg border border-surface-border bg-surface hover:border-process-cyan text-paper transition flex items-center gap-1.5 font-bold cursor-pointer shadow-sm" title="Ubah Tema Light / Dark">
+                    <span id="themeToggleIcon">☀️</span>
+                    <span id="themeToggleText">Light Mode</span>
+                </button>
                 <button onclick="openInvoiceModal()" class="bg-process-magenta hover:bg-opacity-90 text-paper font-semibold px-4 py-2 text-sm rounded transition flex items-center gap-2 shadow-lg">
                     + Buat Invoice Baru
                 </button>
