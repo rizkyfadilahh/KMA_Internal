@@ -146,10 +146,10 @@
                 
                 <!-- Filter Tabs -->
                 <div class="flex flex-wrap gap-2 font-spec text-xs">
-                    <button onclick="filterStatus('ALL')" class="px-3 py-1 bg-surface border border-surface-border text-paper rounded">All</button>
-                    <button onclick="filterStatus('In Progress')" class="px-3 py-1 bg-surface border border-surface-border text-process-yellow rounded">In Progress</button>
-                    <button onclick="filterStatus('INJURY TIME')" class="px-3 py-1 bg-surface border border-process-magenta text-process-magenta rounded">Injury Time</button>
-                    <button onclick="filterStatus('Completed')" class="px-3 py-1 bg-surface border border-surface-border text-process-cyan rounded">Completed</button>
+                    <button id="btn-ALL" onclick="filterStatus('ALL')" class="px-3 py-1 bg-surface border border-surface-border text-paper rounded transition">All</button>
+                    <button id="btn-In-Progress" onclick="filterStatus('In Progress')" class="px-3 py-1 bg-surface border border-surface-border text-process-yellow rounded transition">In Progress</button>
+                    <button id="btn-INJURY-TIME" onclick="filterStatus('INJURY TIME')" class="px-3 py-1 bg-surface border border-surface-border text-process-magenta rounded transition">Injury Time</button>
+                    <button id="btn-Completed" onclick="filterStatus('Completed')" class="px-3 py-1 bg-surface border border-surface-border text-process-cyan rounded transition">Completed</button>
                 </div>
             </div>
 
