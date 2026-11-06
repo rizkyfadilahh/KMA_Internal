@@ -25,6 +25,48 @@ document.addEventListener('DOMContentLoaded', function() {
     applyTheme(currentTheme, false);
 });
 
+function filterStatus(status) {
+    activeFilter = status;
+
+    // Daftar semua ID tombol filter
+    const filterKeys = ['ALL', 'In Progress', 'INJURY TIME', 'Completed'];
+
+    // Loop untuk mengatur styling aktif/tidak aktif pada setiap tombol
+    filterKeys.forEach(key => {
+        const btnId = 'btn-' + key.replace(/\s+/g, '-');
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+
+        // Cek apakah tombol ini yang sedang dipilih
+        const isSelected = (key === status);
+
+        if (isSelected) {
+            // Efek saat tombol MENYALA / DIPILIH
+            btn.classList.remove('bg-surface', 'border-surface-border', 'opacity-70');
+            
+            if (key === 'ALL') {
+                btn.className = "px-3 py-1 bg-paper text-key-black font-bold border border-paper rounded transition shadow-md";
+            } else if (key === 'In Progress') {
+                btn.className = "px-3 py-1 bg-process-yellow text-key-black font-bold border border-process-yellow rounded transition shadow-md";
+            } else if (key === 'INJURY TIME') {
+                btn.className = "px-3 py-1 bg-process-magenta text-paper font-bold border border-process-magenta rounded transition shadow-md";
+            } else if (key === 'Completed') {
+                btn.className = "px-3 py-1 bg-process-cyan text-key-black font-bold border border-process-cyan rounded transition shadow-md";
+            }
+        } else {
+            // Efek saat tombol TIDAK DIPILIH (redup / transparan)
+            btn.className = "px-3 py-1 bg-surface border border-surface-border text-gray-400 hover:text-paper rounded transition opacity-70 hover:opacity-100";
+        }
+    });
+
+    renderProjectList();
+}
+
+// Jalankan sekali saat halaman dimuat agar tombol "All" langsung aktif menyala by default
+window.addEventListener('DOMContentLoaded', () => {
+    filterStatus('ALL');
+});
+
 function applyTheme(theme, animateIcon = true) {
     const isLight = theme === 'light';
     if (isLight) {
